@@ -99,16 +99,19 @@ void Decoder::PopulateInputTable() {
 			//left bool of that cell
 			int result = 0;
 			for (int k = 0; k < INPUTRANGE; k++) {
-				if (xorInputs[j][k])
-					result += atoi(&inputData[k]);
+				if (xorInputs[0][k] && inputData.at(k) == '1') {
+					result++;
+				}
+					
 			}
 			string temp = to_string(result % 2);
 
 			//right bool
 			result = 0;
 			for (int k = 0; k < INPUTRANGE; k++) {
-				if (xorInputs[j][k])
-					result += atoi(&inputData[k]);
+				if (xorInputs[1][k] && inputData.at(k) == '1') {
+					result++;
+				}
 			}
 			temp += to_string(result % 2);
 

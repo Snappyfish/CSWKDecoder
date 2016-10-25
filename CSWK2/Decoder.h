@@ -28,34 +28,55 @@ const int TABHEIGHT = 8;
 typedef unsigned int uint;
 
 
-struct char2 {
-	char data[2];
-
-	void setData(string in) {
-		data[0] = in.at(0);
-		data[1] = in.at(1);
+struct boolAbstract {
+	bool convCharToBool(char in) {
+		if (in == '0') {
+			return false;
+		}
+		else {
+			return true;
+		}
 	}
-	string const toStr() {
-		string result = "";
-		result += data[0];
-		result += data[1];
-		return string(result);
+	char convBoolToChar(bool in) {
+		if (in == false) {
+			return '0';
+		}
+		else {
+			return '1';
+		}
 	}
 };
 
-struct char3 {
-	char data[3];
+struct bool2 : boolAbstract {
+	bool data[2];
 
 	void setData(string in) {
-		data[0] = in.at(0);
-		data[1] = in.at(1);
-		data[2] = in.at(2);
+
+		data[0] = convCharToBool(in.at(0));
+		data[1] = convCharToBool(in.at(1));
 	}
 	string const toStr() {
 		string result = "";
-		result += data[0];
-		result += data[1];
-		result += data[2];
+		result += convBoolToChar(data[0]);
+		result += convBoolToChar(data[1]);
+		return string(result);
+	}
+
+};
+
+struct bool3 : boolAbstract {
+	bool data[3];
+
+	void setData(string in) {
+		data[0] = convCharToBool(in.at(0));
+		data[1] = convCharToBool(in.at(1));
+		data[2] = convCharToBool(in.at(2));
+	}
+	string const toStr() {
+		string result = "";
+		result += convBoolToChar(data[0]);
+		result += convBoolToChar(data[1]);
+		result += convBoolToChar(data[2]);
 		return string(result);
 	}
 	string const getLeftPair() {
@@ -81,9 +102,9 @@ protected:
 
 
 
-	char3 stateTable[TABWIDTH][TABHEIGHT];
-	char3 inputTableCur[TABHEIGHT];
-	char2 inputTableOut[TABWIDTH - 1][TABHEIGHT];
+	bool3 stateTable[TABWIDTH][TABHEIGHT];
+	bool3 inputTableCur[TABHEIGHT];
+	bool2 inputTableOut[TABWIDTH - 1][TABHEIGHT];
 
 	bool xorInputs[2][INPUTRANGE];
 
