@@ -112,9 +112,9 @@ void Decoder::ErrorInput() {
 	int burstModeCount = 0;
 
 	//for every character in inputData
-	for (int i = 0; i < inputData.size(); i++) {
+	for (uint i = 0; i < inputData.size(); i++) {
 		if (burstMode) {
-			inputData[i] = (bool)(rand() % 2);
+			inputData[i] = (bool)((rand() % 2) != 0);
 			burstModeCount++;
 			if (burstModeCount > BURSTERRSTREAK) {
 				burstMode = false;
@@ -154,28 +154,17 @@ void Decoder::PrintTables() {
 }
 
 void Decoder::EncoderSetting(bool xorNum, string xorSett) {
-	if (xorNum) {
-		for (int i = 0; i < INPUTRANGE; i++) {
-			char temp = xorSett.at(i);
-			if (temp == '0') {
-				xorInputs[0][i] = false;
-			}
-			else {
-				xorInputs[0][i] = true;
-			}
+	for (int i = 0; i < INPUTRANGE; i++) {
+		if (xorSett.at(i) == '0') {
+			xorInputs[xorNum][i] = false;
+		}
+		else {
+			xorInputs[xorNum][i] = true;
 		}
 	}
-	else {
-		for (int i = 0; i < INPUTRANGE; i++) {
-			char temp = xorSett.at(i);
-			if (temp == '0') {
-				xorInputs[1][i] = false;
-			}
-			else {
-				xorInputs[1][i] = true;
-			}
-		}
-	}
+
+	//re-populate the input tables, as they change depending on the xor gate settings
+	PopulateInputTable();
 
 }
 
@@ -230,6 +219,7 @@ void Decoder::PopulateInputTable() {
 		}
 	}
 
+	//check each of the rows for duplicates, and output a warning if it's a bad table
 
 
 }
@@ -275,6 +265,12 @@ bool Decoder::WriteOutData() {
 		f.close();
 		return false;
 	}
+
+	SetOutputPath(
+		OUTPUTDIR + 
+		xorSettToStr(XOR1REF) + "-" + xorSettToStr(XOR2REF) +
+		DECODEDEXT + FILEEXT);
+
 
 	//take characters from outputData and print to file
 	uint dataSize = outputData.size();

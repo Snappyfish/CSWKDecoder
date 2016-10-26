@@ -18,6 +18,7 @@ const bool XOR2REF = true;
 const string INPUTDIR = ".\\input\\";
 const string OUTPUTDIR = ".\\output\\";
 const string FILEEXT = ".txt";
+const string DECODEDEXT = "dec";
 
 const int COLCURR = 0;
 const int COLIN0 = 1;
@@ -107,7 +108,7 @@ public:
 	void PrintTables();
 	void EncoderSetting(bool xorNum, string xorSett);
 
-	void SetInputPath(string path);	//change where the data will be input from
+	void SetInputPath(string path);		//change where the data will be input from
 	void SetOutputPath(string path);	//change where the data will be output to
 
 protected:
@@ -116,6 +117,20 @@ protected:
 
 	bool ReadInData();
 	bool WriteOutData();
+
+	string xorSettToStr(bool gate) {
+		string resultStr = "";
+		for (int i = 0; i < INPUTRANGE; i++) {
+			if (xorInputs[gate][i] == false) {
+				resultStr += '0';
+			}
+			else {
+				resultStr += '1';
+			}
+		}
+
+		return resultStr;
+	}
 
 	vector<bool> inputData;
 	vector<bool> outputData;

@@ -6,20 +6,19 @@ using namespace std;
 int main() {
 
 	Decoder decProg;
-	decProg.RunDecoder();
 
-	/*
+	
 	int x = 0;
 	bool exitValue = false;
 
 	while (!exitValue) {
 		//menu options!
 		cout << endl << "Type the number of the instruction to execute:" << endl;
-		cout << "0: Run encoder" << endl;
+		cout << "0: Run decoder" << endl;
 		cout << "1: Change xor gate settings" << endl;
 		cout << "2: Change input file" << endl;
 		cout << "3: Change output file" << endl;
-		cout << "4: Run encoder on all possible permutations" << endl;
+		cout << "4: Read in setting-named file" << endl;
 		cout << "5: End program" << endl;
 
 		cin >> x;
@@ -28,22 +27,21 @@ int main() {
 
 		switch (x) {
 		case 0: //Run encoder
-			cout << endl << "Running encoder..." << endl;
-			decProg.RunEncoderPreStep();
-			decProg.RunEncoder();
+			cout << endl << "Running decoder..." << endl;
+			decProg.RunDecoder();
 			break;
 
 		case 1: //Change xor gate settings
 			cout << endl << "Which gate should be modified, 1 or 2?" << endl;
 			cin >> x;
-			cout << endl << "And what pattern should it be changed to? (E.g. \"0011\"" << endl;
+			cout << endl << "And what pattern should it be changed to? (E.g. \"0011\")" << endl;
 			cin >> stringInput;
 
 			if (x == 1) {
-				decProg.EncoderSetting(false, stringInput);
+				decProg.EncoderSetting(XOR1REF, stringInput);
 			}
 			else {
-				decProg.EncoderSetting(true, stringInput);
+				decProg.EncoderSetting(XOR2REF, stringInput);
 			}
 
 			cout << endl << "Gate setting changed." << endl;
@@ -62,8 +60,11 @@ int main() {
 			break;
 
 		case 4: //Change output file
-			cout << endl << "Running all encoder permutations..." << endl;
-			decProg.RunEncoderFullCycle();
+			cout << endl << "What is the file called?" << endl;
+			cin >> stringInput;
+			decProg.SetInputPath(INPUTDIR + stringInput);
+			decProg.EncoderSetting(XOR1REF, stringInput.substr(0, 4));
+			decProg.EncoderSetting(XOR2REF, stringInput.substr(5, 4));
 			break;
 
 		default: //end program
@@ -73,11 +74,7 @@ int main() {
 
 	}
 
+
 	return 0;
-	*/
-
-	system("pause");
-
-
 }
 
