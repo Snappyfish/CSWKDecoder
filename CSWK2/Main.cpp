@@ -6,6 +6,7 @@ using namespace std;
 int main() {
 
 	Decoder decProg;
+	decProg.RunDecoder();
 
 	/*
 	int x = 0;

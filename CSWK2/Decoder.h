@@ -15,6 +15,7 @@ const int OUTPUTSIZE = 2;
 const bool XOR1REF = false;
 const bool XOR2REF = true;
 
+const string INPUTDIR = ".\\input\\";
 const string OUTPUTDIR = ".\\output\\";
 const string FILEEXT = ".txt";
 
@@ -24,6 +25,12 @@ const int COLIN1 = 2;
 
 const int TABWIDTH = 3;
 const int TABHEIGHT = 8;
+
+const int BURSTERRMAX = 21;
+const int BURSTERRTHRESH = 18;
+const int BURSTERRSTREAK = 4;
+
+
 
 typedef unsigned int uint;
 
@@ -59,7 +66,7 @@ struct bool2 : boolAbstract {
 		string result = "";
 		result += convBoolToChar(data[0]);
 		result += convBoolToChar(data[1]);
-		return string(result);
+		return result;
 	}
 
 };
@@ -81,8 +88,8 @@ struct bool3 : boolAbstract {
 	}
 	string const getLeftPair() {
 		string result = "";
-		result += data[0];
-		result += data[1];
+		result += convBoolToChar(data[0]);
+		result += convBoolToChar(data[1]);
 		return result;
 	}
 };
@@ -93,13 +100,25 @@ public:
 	Decoder(string xorSett1 = defSett1, string xorSett2 = defSett2, string inFilepath = defInFilepath, string outFilepath = defOutFilepath);
 	~Decoder();
 
+	void RunDecoder();
+
+	void ErrorInput();
+
 	void PrintTables();
 	void EncoderSetting(bool xorNum, string xorSett);
+
+	void SetInputPath(string path);	//change where the data will be input from
+	void SetOutputPath(string path);	//change where the data will be output to
 
 protected:
 	void PopulateStateTable();
 	void PopulateInputTable();
 
+	bool ReadInData();
+	bool WriteOutData();
+
+	vector<bool> inputData;
+	vector<bool> outputData;
 
 
 	bool3 stateTable[TABWIDTH][TABHEIGHT];
@@ -107,10 +126,11 @@ protected:
 	bool2 inputTableOut[TABWIDTH - 1][TABHEIGHT];
 
 	bool xorInputs[2][INPUTRANGE];
-
+	 
 	string inputFilepath;	//the path to read in from
 	string outputFilepath;	//the path to output data to
 
+	
 
 	const static string defSett1;		//default input settings for xor gate 1
 	const static string defSett2;		//default input settings for xor gate 2

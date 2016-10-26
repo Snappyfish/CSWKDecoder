@@ -29,6 +29,110 @@ Decoder::~Decoder() {
 
 }
 
+void Decoder::RunDecoder() {
+	ReadInData();
+	
+	int maxLoop = inputData.size() / 2;
+	bool3 regState;
+	regState.setData("000");
+	bool currData[2];
+
+	//for every pair of input bits
+	for (int i = 0; i < maxLoop; i++) {
+		currData[0] = inputData.at(2 * i);
+		currData[1] = inputData.at((2 * i) + 1);
+
+		//look up input bit with input table
+		string compBits = "";
+		if (currData[0] == false) {
+			compBits += '0';
+		}
+		else {
+			compBits += '1';
+		}
+		if (currData[1] == false) {
+			compBits += '0';
+		}
+		else {
+			compBits += '1';
+		}
+
+		int stateRow;
+		bool loopCheck = true;
+		for (int j = 0; j < TABHEIGHT && loopCheck; j++) {
+			if (stateTable[0][j].toStr() == regState.toStr()) {
+				stateRow = j;
+				loopCheck = false;
+			}
+		}
+
+		bool addedBit;
+		if (compBits == inputTableOut[0][stateRow].toStr()) {
+			outputData.push_back(false);
+			addedBit = false;
+		}
+		else if (compBits == inputTableOut[1][stateRow].toStr()) {
+			outputData.push_back(true);
+			addedBit = true;
+		}
+		else {
+			cout << "Error! Impossible state, terminating run." << endl;
+			return;
+		}
+
+		//update regState with state table
+		loopCheck = true;
+		for (int j = 0; j < TABHEIGHT && loopCheck; j++) {
+			if (stateTable[0][j].toStr() == regState.toStr()) {
+				if (!addedBit) {
+					regState.setData(stateTable[1][j].toStr());
+				}
+				else {
+					regState.setData(stateTable[2][j].toStr());
+				}
+				loopCheck = false;
+			}
+		}
+
+	}
+	
+
+	if (WriteOutData()) {
+		cout << "Success." << endl;
+	}
+	else {
+		cout << "Failed!" << endl;
+	}
+
+
+}
+
+void Decoder::ErrorInput() {
+	bool burstMode = false;
+	int burstModeCount = 0;
+
+	//for every character in inputData
+	for (int i = 0; i < inputData.size(); i++) {
+		if (burstMode) {
+			inputData[i] = (bool)(rand() % 2);
+			burstModeCount++;
+			if (burstModeCount > BURSTERRSTREAK) {
+				burstMode = false;
+				burstModeCount = 0;
+			}
+		}
+		else {
+			if ((rand() % BURSTERRMAX) > BURSTERRTHRESH) {
+				burstMode = true;
+			}
+		}
+	}
+
+
+
+
+}
+
 void Decoder::PrintTables() {
 	cout << "State." << endl;
 	for (int i = 0; i < TABHEIGHT; i++) {
@@ -73,6 +177,13 @@ void Decoder::EncoderSetting(bool xorNum, string xorSett) {
 		}
 	}
 
+}
+
+void Decoder::SetInputPath(string path) {
+	inputFilepath = path;
+}
+void Decoder::SetOutputPath(string path) {
+	outputFilepath = path;
 }
 
 
@@ -121,6 +232,58 @@ void Decoder::PopulateInputTable() {
 
 
 
+}
+
+bool Decoder::ReadInData() {
+	//clean out current stored data
+	inputData.clear();
+
+	//setup input stream
+	ifstream f(inputFilepath.c_str(), ios::in);
+
+	if (!f) {//Oh dear, it can't find the file :(
+		cout << "Aw nuts. No file to read in." << endl;
+		f.close();
+		return false;
+	}
+	char currentChar;
+
+	while (f >> currentChar) {	//loop until it returns false (at eof)
+		if (currentChar == '0') {
+			inputData.push_back(false);
+		}
+		else if (currentChar == '1') {
+			inputData.push_back(true);
+		}
+		else {
+			cout << "Warning; invalid char in file: " << currentChar << endl;
+		}
+
+	}
+
+	f.close();
+	cout << "Read in data successfully!" << endl;
+	return true;
+}
+
+bool Decoder::WriteOutData() {
+	//setup input stream
+	ofstream f(outputFilepath.c_str(), ios::out);
+
+	if (!f) {
+		cout << "Aw nuts. File output failed." << endl;
+		f.close();
+		return false;
+	}
+
+	//take characters from outputData and print to file
+	uint dataSize = outputData.size();
+	for (uint i = 0; i < dataSize; i++) {
+		f << outputData[i];
+	}
+
+	f.close();
+	return true;
 }
 
 
